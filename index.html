@@ -78,7 +78,7 @@
   </div>
 
   <!-- موسيقى -->
-  <audio id="bg-music" src="/happy.mp3" loop></audio>
+  <audio id="bg-music" src="الصوت/happy.mp3" loop></audio>
 
   <script>
     const startBtn = document.getElementById('start-btn');
@@ -165,11 +165,15 @@
     startBtn.addEventListener('click', () => {
       welcomeScreen.style.display = 'none';
       celebration.style.display = 'block';
-      
-      // تشغيل الموسيقى بطريقة مضمونة
+
       bgMusic.currentTime = 0; // إعادة التشغيل من البداية
-      bgMusic.play().catch(err => console.log('خطأ في تشغيل الصوت:', err));
-      
+      bgMusic.play().then(() => {
+        console.log('الصوت شغال الآن');
+      }).catch(err => {
+        console.log('خطأ في تشغيل الصوت:', err);
+        alert('اضغط مرة أخرى إذا لم يعمل الصوت.');
+      });
+
       animate();
     });
   </script>
