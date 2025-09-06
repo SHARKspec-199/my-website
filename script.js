@@ -58,4 +58,7 @@ startBtn.addEventListener("click", () => {
   }, 500);
 
   animate();
+  animate(); // يبدأ تشغيل الألعاب النارية حتى لو مفيش ولا وحدة لسه
+
 });
+
