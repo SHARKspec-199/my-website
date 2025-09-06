@@ -9,56 +9,75 @@ canvas.height = window.innerHeight;
 
 let fireworks = [];
 
+// كائن للألعاب النارية
 class Firework {
-  constructor(x, y) {
+  constructor(x, y, colors) {
     this.x = x;
     this.y = y;
-    this.radius = 2;
-    this.color = `hsl(${Math.random() * 360}, 100%, 50%)`;
-    this.speedX = (Math.random() - 0.5) * 5;
-    this.speedY = (Math.random() - 0.5) * 5;
-    this.alpha = 1;
+    this.colors = colors;
+    this.particles = [];
+    for (let i = 0; i < 80; i++) {
+      this.particles.push({
+        x: x,
+        y: y,
+        angle: Math.random() * 2 * Math.PI,
+        speed: Math.random() * 6 + 2,
+        radius: 2,
+        alpha: 1
+      });
+    }
   }
 
   update() {
-    this.x += this.speedX;
-    this.y += this.speedY;
-    this.alpha -= 0.01;
+    this.particles.forEach(p => {
+      p.x += Math.cos(p.angle) * p.speed;
+      p.y += Math.sin(p.angle) * p.speed;
+      p.alpha -= 0.01;
+    });
   }
 
   draw() {
-    ctx.globalAlpha = this.alpha;
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-    ctx.fillStyle = this.color;
-    ctx.fill();
+    this.particles.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.radius, 0, 2 * Math.PI);
+      ctx.fillStyle = `rgba(${this.colors},${p.alpha})`;
+      ctx.fill();
+    });
   }
 }
 
+// تشغيل الأنيميشن
 function animate() {
-  requestAnimationFrame(animate);
-  ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  fireworks.forEach((f, i) => {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  fireworks.forEach((f, index) => {
     f.update();
     f.draw();
-    if (f.alpha <= 0) fireworks.splice(i, 1);
+    if (f.particles[0].alpha <= 0) {
+      fireworks.splice(index, 1);
+    }
   });
+  requestAnimationFrame(animate);
 }
+animate();
 
+// زر البداية
 startBtn.addEventListener("click", () => {
+  // اخفاء الزرار
+  startBtn.style.display = "none";
+
+  // اظهار الرسالة
   message.classList.remove("hidden");
+
+  // تشغيل الموسيقى
   music.play();
 
+  // إطلاق الألعاب النارية كل 600ms
   setInterval(() => {
-    for (let i = 0; i < 20; i++) {
-      fireworks.push(new Firework(canvas.width / 2, canvas.height / 2));
-    }
-  }, 500);
-
-  animate();
-  animate(); // يبدأ تشغيل الألعاب النارية حتى لو مفيش ولا وحدة لسه
-
+    let x = Math.random() * canvas.width;
+    let y = Math.random() * (canvas.height / 2);
+    let colors = `${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)}`;
+    fireworks.push(new Firework(x, y, colors));
+  }, 600);
 });
+
 
